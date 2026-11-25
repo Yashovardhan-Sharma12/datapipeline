@@ -1,0 +1,15 @@
+.tabnav { padding-block: 0 18px; padding-left: max(16px, env(safe-area-inset-left, 0px), 3vw); padding-right: max(16px, env(safe-area-inset-right, 0px), 3vw); border-bottom: 1px solid var(--head-line); }
+.tabs-main { display: flex; border: 1px solid #1B2D43; border-radius: 5px; overflow-x: auto; background: #0A1625; }
+.tabs-main a { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 10px 16px; border-right: 1px solid #1B2D43; background: var(--tab-bg); color: var(--tab-ink); font-size: 13.5px; font-weight: 500; text-decoration: none; white-space: nowrap; }
+.tabs-main a:last-child { border-right: 0; }
+.tabs-main a:hover { color: var(--head-ink); background: #12253A; }
+.tabs-main a[aria-current="page"] { color: #FFFFFF; background: var(--tab-on); font-weight: 700; box-shadow: inset 0 -3px 0 var(--sky); }
+.tabs-main .count { font-size: 11.5px; min-width: 19px; padding: 0 6px; border-radius: 999px; background: var(--red); color: #FFFFFF; font-weight: 700; text-align: center; }
+.tabs-main .soon { font-size: 11px; color: var(--head-sub); border: 1px solid #27415F; border-radius: 999px; padding: 0 7px; font-weight: 500; }
+.seg { display: inline-flex; }
+.seg a, .seg button { display: inline-flex; align-items: center; min-height: 32px; margin-left: -1px; padding: 5px 13px; border: 1px solid #CDDBE8; background: var(--surface); color: var(--blue); font-size: 12.5px; font-weight: 700; text-decoration: none; cursor: pointer; }
+.seg > :first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
+.seg > :last-child { border-radius: 0 6px 6px 0; }
+.seg [aria-current="true"], .seg [aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #FFFFFF; position: relative; }
+
+.tabs-main a.tab-current { color: #fff; background: var(--tab-on); font-weight: 700; box-shadow: inset 0 -3px 0 var(--sky); }

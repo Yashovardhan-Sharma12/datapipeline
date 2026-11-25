@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cockpit 2.0 | Data Pipeline</title>
+            <link rel="stylesheet" href="{{ url_for('static', filename='data_pipeline.css') }}">
+</head>
+<body>
+    <div class="tesco-line"></div>
+
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand-wrap">
+                <div>
+                    <div class="tesco-wordmark">TESCO</div>
+                    <div class="tesco-stripes">
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="product-title">
+                    <strong>Cockpit 2.0</strong>
+                    <span>Customer &amp; Colleague Data Pipeline</span>
+                </div>
+            </div>
+
+            <div class="header-meta">
+                <div class="header-chip"><span class="live-dot"></span> API online</div>
+                <div class="header-chip">{{ environment_name | upper }}</div>
+                <div class="header-chip">Asia/Kolkata</div>
+                <div class="header-chip">Port {{ api_port }}</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="hero">
+            <div class="panel hero-main">
+                <div class="eyebrow">CCEC Data Operations</div>
+                <h1>CCEC data refresh control</h1>
+                <p class="hero-copy">
+                    Run customer and colleague queries, monitor execution status and validate Cockpit outputs against CEC workbooks from one place.
+                </p>
+
+                <div class="action-row">
+                    <div class="primary-actions">
+                        <button class="btn-primary" onclick="runAll()">Run all active queries</button>
+                        <button class="btn-blue" onclick="openContentGenModal()">Run ContentGen</button>
+                        <a class="button-link btn-ghost" href="/download-output">Download output (.zip)</a>
+                    </div>
+
+                    <div class="secondary-actions">
+                        <div class="single-query-control">
+                            <div class="field">
+                                <label for="singleQuery">Run a single query</label>
+                                <select id="singleQuery">
+                                    {{ query_options | safe }}
+                                </select>
+                            </div>
+                            <button class="btn-secondary single-query-button" onclick="runOne()">Run selected</button>
+                        </div>
+                        <div id="queryCatalogSummary" class="query-catalog-summary">
+                            Loading Customer &amp; Colleague queries...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="panel schedule-panel">
+                <div>
+                    <div class="schedule-title">Scheduled refreshes</div>
+                    <div class="schedule-row">
+                        <div class="schedule-day">Monday</div>
+                        <div class="schedule-time">13:30 · 14:30 · 15:30 · 16:30 · 17:30 · 18:30 · 19:00 · 19:30</div>
+                    </div>
+                    <div class="schedule-row">
+                        <div class="schedule-day">Tue – Sun</div>
+                        <div class="schedule-time">14:30</div>
+                    </div>
+                </div>
+
+                <div class="last-refresh">
+                    <span>Last successful scheduled refresh</span>
+                    <strong>{{ last_refresh }}</strong>
+                </div>
+            </aside>
+        </section>
+
+        <section class="summary-grid">
+            <div class="metric-card">
+                <div class="metric-label">Active customer + colleague queries</div>
+                <div class="metric-value blue" id="metricTotal">{{ query_count }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Completed</div>
+                <div class="metric-value green" id="metricComplete">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Running / Pending</div>
+                <div class="metric-value amber" id="metricRunning">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Failed</div>
+                <div class="metric-value red" id="metricFailed">0</div>
+            </div>
+        </section>
+
+        <section class="panel section">
+            <div class="section-header">
+                <div class="section-title">
+                    <h2>Scheduled refresh history</h2>
+                    <p>Live progress, retry attempts, latest-week coverage and failure reasons for recent scheduled refreshes.</p>
+                </div>
+                <div class="job-id">Up to 200 recent refreshes</div>
+            </div>
+            <div class="refresh-list" id="refreshHistory">
+                <div class="empty-row" style="padding: 26px;">Loading refresh history...</div>
+            </div>
+            <div class="refresh-list">
+                <button class="btn-secondary" id="refreshHistoryOlder" type="button" hidden>Show older refreshes</button>
+            </div>
+        </section>
+
+        <section class="panel section">
+            <div class="section-header">
+                <div class="section-title">
+                    <h2>Query execution</h2>
+                    <p>Live status of the current manually-triggered job.</p>
+                </div>
+                <div class="job-id" id="jobIdLabel">No active job</div>
+            </div>
+
+            <div class="table-wrap">
+                <table id="statusTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">#</th>
+                            <th style="width: 130px;">Source</th>
+                            <th>Query name</th>
+                            <th style="width: 150px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="empty-row">
+                            <td colspan="4">Run a query to see execution status.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel section">
+            <div class="section-header">
+                <div class="section-title">
+                    <h2>Cockpit vs CEC validation</h2>
+                    <p>Differences returned by active <strong>validation_&lt;market&gt;.sql</strong> queries across UK, ROI, TMI and CE.</p>
+                </div>
+
+                <div class="filter-row">
+                    <div class="field">
+                        <label for="marketFilter">Market</label>
+                        <select id="marketFilter" onchange="applyFilters()">
+                            <option value="">All markets</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="weekFilter">Year week</label>
+                        <select id="weekFilter" onchange="applyFilters()">
+                            <option value="">All weeks</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="businessParentFilter">Business parent</label>
+                        <select id="businessParentFilter" onchange="applyFilters()">
+                            <option value="">All business parents</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="comparisonWrapper">
+                <table id="comparisonTable">
+                    <thead>
+                        <tr>
+                            <th>Market</th>
+                            <th>Year Week</th>
+                            <th>Country</th>
+                            <th>Sub Country</th>
+                            <th>Channel</th>
+                            <th>Business Parent</th>
+                            <th>Handled Diff</th>
+                            <th>Offered Diff</th>
+                            <th>Repeat Contact 24hr Diff</th>
+                            <th>Abandoned Diff</th>
+                            <th>AHT Diff</th>
+                            <th>ASA Diff</th>
+                            <th>GOGW Volume Diff</th>
+                            <th>GOGW Total Value Diff</th>
+                            <th>GOGW Average Value Diff</th>
+                            <th>CSAT Diff</th>
+                            <th>Service Level Diff</th>
+                            <th>Opened Conv Diff</th>
+                            <th>Journey Volume Diff</th>
+                            <th>Closed Conv Diff</th>
+                            <th>Avg EHT Diff</th>
+                            <th>Repeat Contact Rate Diff</th>
+                            <th>Fcst Offered Diff</th>
+                            <th>Fcst Handled Time Diff</th>
+                            <th>Fcst Journey Volume Diff</th>
+                            <th>Match Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="empty-row">
+                            <td colspan="26">Run a validation_&lt;market&gt;.sql query to populate this table.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="footer-note">Cockpit 2.0 · Internal data pipeline control</div>
+    </main>
+
+    <div class="modal-backdrop" id="contentGenModal" onclick="handleModalBackdrop(event)">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="contentGenModalTitle">
+            <div class="modal-header">
+                <h3 id="contentGenModalTitle">Run ContentGen workflow</h3>
+                <p>Select whether this run should include diagnostics. Content generation and database upload always run sequentially.</p>
+            </div>
+
+            <div class="modal-body">
+                <label class="workflow-step optional">
+                    <input type="checkbox" id="stepDiagnostics">
+                    <span class="workflow-step-copy">
+                        <strong>1 · EAGPT Diagnostics</strong>
+                        <span>Optional. Select this for the full three-stage workflow.</span>
+                        <span class="workflow-step-badge">Optional</span>
+                    </span>
+                </label>
+
+                <label class="workflow-step">
+                    <input type="checkbox" checked disabled>
+                    <span class="workflow-step-copy">
+                        <strong>2 · Content Generation</strong>
+                        <span>Runs after diagnostics when diagnostics is selected.</span>
+                    </span>
+                </label>
+
+                <label class="workflow-step">
+                    <input type="checkbox" checked disabled>
+                    <span class="workflow-step-copy">
+                        <strong>3 · Database Upload</strong>
+                        <span>Runs after content generation completes successfully.</span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="modal-message info" id="contentGenMessage"></div>
+
+            <div class="modal-actions">
+                <button class="btn-ghost" onclick="closeContentGenModal()">Cancel</button>
+                <button class="btn-blue" id="contentGenRunButton" onclick="triggerContentGen()">Run workflow</button>
+            </div>
+        </div>
+    </div>
+        <script src="{{ url_for('static', filename='data_pipeline.js') }}"></script>
+</body>
+</html>

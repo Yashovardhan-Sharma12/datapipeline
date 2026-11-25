@@ -1,0 +1,7 @@
+Flask
+APScheduler>=3,<4
+dash>=3.1,<4
+Flask-Caching>=2,<3
+pandas
+sqlalchemy
+pyodbc

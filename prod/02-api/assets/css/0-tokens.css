@@ -1,0 +1,49 @@
+@font-face { font-family: "Tesco Modern"; src: url("../fonts/TESCOModern-Light-web.ttf") format("truetype"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Tesco Modern"; src: url("../fonts/TESCOModern-Regular-web.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Tesco Modern"; src: url("../fonts/TESCOModern-Medium-web.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Tesco Modern"; src: url("../fonts/TESCOModern-Bold-web.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Tesco Modern"; src: url("../fonts/TESCOModern-Bold-web.ttf") format("truetype"); font-weight: 800; font-style: normal; font-display: swap; }
+/* Layout: follows the eaCCEC customer deep dive frontend. Dark navy header with a centred title and tab bar, light panels, Tesco blue headings. One day-long lane chart is the signature. Single light theme, as in the deep dive. */
+:root {
+  --page: #F4F8FC;
+  --surface: #FFFFFF;
+  --soft: #EDF5FB;
+  --sunk: #F7FAFD;
+  --ink: #14233A;
+  --ink-2: #42526A;
+  --muted: #66758A;
+  --line: #DCE6F0;
+  --blue: #00539F;
+  --dark-blue: #003B70;
+  --sky: #58A9F5;
+  --red: #E30613;
+  --amber: #F5A623;
+  --head-1: #07111F;
+  --head-2: #0A1C32;
+  --head-3: #12375A;
+  --head-line: #1C314A;
+  --tab-bg: #0D1A2A;
+  --tab-on: #173653;
+  --tab-ink: #8DA4BD;
+  --head-ink: #F4F7FB;
+  --head-sub: #7693B2;
+  --st-query: #A9BCD2;
+  --st-diag: #86B9EA;
+  --st-gen: #00539F;
+  --st-up: #0B2A4D;
+  --ok: #006B46;
+  --ok-soft: #EBF7F1;
+  --warn: #8A5A00;
+  --warn-soft: #FFF8E9;
+  --bad: #B3121D;
+  --bad-soft: #FFF1F2;
+  --idle: #8A97A8;
+  --code-bg: #F5F8FB;
+  --hl-line: #FFE6E8;
+  --shadow: 0 8px 20px rgba(23, 51, 83, 0.07);
+  --font: "Tesco Modern", "Segoe UI", "Atkinson Hyperlegible Next", Arial, sans-serif;
+  --mono: "Atkinson Hyperlegible Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --r: 8px;
+  --r-sm: 6px;
+  color-scheme: light;
+}
