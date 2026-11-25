@@ -20,7 +20,6 @@ from urllib import request as urllib_request
 from urllib.parse import quote, urlencode, urlsplit
 
 from config import (
-    API_FOLDER,
     GIT_AUTHOR_EMAIL,
     GIT_AUTHOR_NAME,
     GIT_COMMAND_TIMEOUT_SECONDS,
@@ -47,15 +46,6 @@ class GitQueryError(RuntimeError):
 
 # ----------------------------------------------------------------------------------------------------------------------
 #%% Functions
-
-
-def func_git_find_repo_root(start_path):
-    """Walk upwards until the repository .git directory is found."""
-    current_path = Path(start_path).resolve()
-    for path in [current_path, *current_path.parents]:
-        if (path / ".git").exists():
-            return path
-    raise FileNotFoundError(f"Unable to find Git repository root from: {start_path}")
 
 
 def func_git_pull():
@@ -340,4 +330,4 @@ def func_git_open_query_pr(path, sql, title, run_by, base_hash=None):
 # ----------------------------------------------------------------------------------------------------------------------
 #%% Configure
 git_pull_lock = threading.Lock()
-git_repo_path = Path(GIT_REPO_PATH).resolve() if GIT_REPO_PATH else func_git_find_repo_root(API_FOLDER)
+git_repo_path = GIT_REPO_PATH
